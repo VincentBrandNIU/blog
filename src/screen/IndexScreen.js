@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import {
   View,
   Text,
@@ -10,7 +10,18 @@ import { Context as BlogContext } from '../context/BlogContext'
 import { EvilIcons } from '@expo/vector-icons'
 
 const IndexScreen = ({ navigation }) => {
-  const { state, deleteBlogPost } = useContext(BlogContext)
+  const { state, deleteBlogPost, getBlogPosts } = useContext(BlogContext)
+  //Refresh only at the beginning to call getBlogPosts first time and any tie we navigate back to index 
+  useEffect(() => {
+    getBlogPosts();
+    const listener = navigation.addListener('didFocus', () => {
+      getBlogPosts(); 
+    });
+    return () => {
+      listener.remove(); 
+    };
+  }, [])
+
   return (
     <View>
       <FlatList
